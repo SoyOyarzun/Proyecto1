@@ -33,6 +33,7 @@ class AlumnoRepositoryTest {
         alumno1.setEdad(20);
         alumno1.setCurso("Matematicas");
         alumno1 = alumnoRepository.save(alumno1);  // Guardar y actualizar referencia
+        System.out.println(alumno1);
 
         // Crear y guardar el segundo alumno
         alumno2 = new Alumno();
@@ -41,6 +42,7 @@ class AlumnoRepositoryTest {
         alumno2.setEdad(22);
         alumno2.setCurso("Ciencias");
         alumno2 = alumnoRepository.save(alumno2);  // Guardar y actualizar referencia
+        System.out.println(alumno2);
     }
 
     @Test
@@ -181,4 +183,146 @@ class AlumnoRepositoryTest {
         // Aquí comprobamos que la base de datos solo contiene un alumno después de eliminar.
         assertEquals(1, alumnosRestantes.size());
     }
+
+    //Etapa de test con SQl Nativo
+    @Test
+    void testFindAllAlumnosQuery() {
+        // Recuperar todos los alumnos usando la consulta personalizada
+        List<Alumno> alumnos = alumnoRepository.findAllAlumnosQuery();
+        boolean primerAlumnoExiste = alumnos.stream()
+                .anyMatch(alumno -> alumno.getNombre().equals("john"));
+
+        boolean segundoAlumnoExiste = alumnos.stream()
+                .anyMatch(alumno -> alumno.getNombre().equals("Jane"));
+
+        alumnos.forEach(System.out::println);
+        // Verificar que la lista contiene los dos alumnos insertados en setUp()
+        assertEquals(2, alumnos.size());
+        assertTrue(primerAlumnoExiste);
+        assertTrue(segundoAlumnoExiste);
+
+        // Imprimir cada alumno para confirmar los resultados
+    }
+
+    @Test
+    void testFindAlumnoByIdQuery() {
+        // Buscar un alumno por su ID utilizando la consulta personalizada
+        Alumno alumnoEncontrado = alumnoRepository.findAlumnoByIdQuery(alumno1.getId());
+
+        // Verificar que los datos del alumno encontrado coinciden con el registro esperado
+        assertNotNull(alumnoEncontrado);
+        assertEquals(alumno1.getNombre(), alumnoEncontrado.getNombre());
+        assertEquals(alumno1.getApellido(), alumnoEncontrado.getApellido());
+        assertEquals(alumno1.getEdad(), alumnoEncontrado.getEdad());
+        assertEquals(alumno1.getCurso(), alumnoEncontrado.getCurso());
+
+        // Imprimir el resultado para confirmar visualmente
+        System.out.println(alumnoEncontrado);
+    }
+
+    @Test
+    void testSaveAlumnoQuery() {
+        // Crear un nuevo alumno
+        String nombre = "Carlos";
+        String apellido = "Perez";
+        int edad = 21;
+        String curso = "Historia";
+
+        // Guardar el nuevo alumno usando la consulta personalizada
+        alumnoRepository.saveAlumnoQuery(nombre, apellido, edad, curso);
+
+        // Verificar que el alumno fue guardado recuperándolo por su nombre y curso
+        List<Alumno> alumnosGuardados = alumnoRepository.findAlumnosByCursoQuery(curso);
+        assertEquals(1, alumnosGuardados.size());
+        Alumno alumnoGuardado = alumnosGuardados.get(0);
+        assertEquals(nombre, alumnoGuardado.getNombre());
+        assertEquals(apellido, alumnoGuardado.getApellido());
+        assertEquals(edad, alumnoGuardado.getEdad());
+        assertEquals(curso, alumnoGuardado.getCurso());
+
+        // Imprimir los datos del alumno guardado
+        System.out.println(alumnoGuardado);
+    }
+
+    @Test
+    void testUpdateAlumnoQuery() {
+        // Actualizar los datos del primer alumno
+        String nuevoNombre = "Actualizado";
+        String nuevoApellido = "Modificado";
+        int nuevaEdad = 30;
+        String nuevoCurso = "Química";
+
+        // Ejecutar la actualización
+        alumnoRepository.updateAlumnoQuery(alumno1.getId(), nuevoNombre, nuevoApellido, nuevaEdad, nuevoCurso);
+
+        // Recuperar el alumno actualizado
+        Alumno alumnoActualizado = alumnoRepository.findAlumnoByIdQuery(alumno1.getId());
+
+        // Verificar que los datos se actualizaron correctamente
+        assertEquals(nuevoNombre, alumnoActualizado.getNombre());
+        assertEquals(nuevoApellido, alumnoActualizado.getApellido());
+        assertEquals(nuevaEdad, alumnoActualizado.getEdad());
+        assertEquals(nuevoCurso, alumnoActualizado.getCurso());
+
+        // Imprimir el alumno actualizado
+        System.out.println(alumnoActualizado);
+    }
+
+    @Test
+    void testDeleteAlumnoByIdQuery() {
+        // Eliminar el primer alumno usando la consulta personalizada
+        alumnoRepository.deleteAlumnoByIdQuery(alumno1.getId());
+
+        // Verificar que el alumno fue eliminado
+        Optional<Alumno> alumnoEliminado = alumnoRepository.findById(alumno1.getId());
+        assertFalse(alumnoEliminado.isPresent());
+
+        // Verificar que solo queda un alumno en la base de datos
+        List<Alumno> alumnosRestantes = alumnoRepository.findAll();
+        assertEquals(1, alumnosRestantes.size());
+        assertEquals(alumno2.getNombre(), alumnosRestantes.get(0).getNombre());
+
+        // Imprimir los alumnos restantes
+        alumnosRestantes.forEach(System.out::println);
+    }
+
+    @Test
+    void testFindAlumnosByCursoQuery() {
+        // Buscar alumnos por curso
+        List<Alumno> alumnosMatematicas = alumnoRepository.findAlumnosByCursoQuery("Matematicas");
+
+        // Verificar que se encuentra el alumno correspondiente al curso
+        assertEquals(1, alumnosMatematicas.size());
+        assertEquals(alumno1.getNombre(), alumnosMatematicas.get(0).getNombre());
+
+        // Imprimir los resultados
+        alumnosMatematicas.forEach(System.out::println);
+    }
+
+    @Test
+    void testFindAlumnosByRangoEdad() {
+        // Buscar alumnos cuyo rango de edad sea entre 18 y 22 años
+        List<Alumno> alumnosRangoEdad = alumnoRepository.findAlumnosByRangoEdad(18, 22);
+
+        boolean primerAlumnoExiste = alumnosRangoEdad.stream()
+                .anyMatch(alumno -> alumno.getNombre().equals("john"));
+
+        boolean segundoAlumnoExiste = alumnosRangoEdad.stream()
+                .anyMatch(alumno -> alumno.getNombre().equals("Jane"));
+
+        // Verificar que ambos alumnos se encuentran en el rango de edad
+        assertEquals(2, alumnosRangoEdad.size());
+        assertTrue(primerAlumnoExiste);
+        assertTrue(segundoAlumnoExiste);
+
+        // Buscar alumnos cuyo rango de edad sea entre 23 y 30 años
+        List<Alumno> alumnosFueraDeRango = alumnoRepository.findAlumnosByRangoEdad(23, 30);
+
+        // Verificar que no hay resultados fuera del rango especificado
+        assertTrue(alumnosFueraDeRango.isEmpty());
+
+        // Imprimir los resultados
+        alumnosRangoEdad.forEach(System.out::println);
+    }
+
 }
