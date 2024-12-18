@@ -5,10 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Repository
 public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
 
     @Query(value = "SELECT * FROM alumnos", nativeQuery = true)
@@ -21,14 +23,14 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
     @Transactional
     @Query(value = "INSERT INTO alumnos (nombre, apellido, edad, curso) VALUES (:nombre, :apellido, :edad, :curso)", nativeQuery = true)
     int saveAlumnoQuery(@Param("nombre") String nombre, @Param("apellido") String apellido,
-                    @Param("edad") int edad, @Param("curso") String curso);
+                        @Param("edad") int edad, @Param("curso") String curso);
 
     @Modifying
     @Transactional
     @Query(value = "UPDATE alumnos SET nombre = :nombre, apellido = :apellido, edad = :edad, curso = :curso WHERE id = :id", nativeQuery = true)
     void updateAlumnoQuery(@Param("id") Long id, @Param("nombre") String nombre,
-                      @Param("apellido") String apellido, @Param("edad") int edad,
-                      @Param("curso") String curso);
+                           @Param("apellido") String apellido, @Param("edad") int edad,
+                           @Param("curso") String curso);
 
     @Modifying
     @Transactional
@@ -43,3 +45,5 @@ public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
                                         @Param("edadMaxima") int edadMaxima);
 }
 //Alonso paso por aqui
+
+// El Barto

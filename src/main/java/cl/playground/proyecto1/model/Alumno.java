@@ -1,7 +1,13 @@
 package cl.playground.proyecto1.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Entity
 @Table(name = "alumnos")
 public class Alumno {
@@ -17,9 +23,9 @@ public class Alumno {
     @Column(name = "curso", length = 15)
     private String curso;
 
-    public Alumno() {}
+    //public Alumno() {}
 
-    public Alumno(Long id, String nombre, String apellido, int edad, String curso) {
+    /*public Alumno(Long id, String nombre, String apellido, int edad, String curso) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -76,5 +82,5 @@ public class Alumno {
                 ", edad=" + edad +
                 ", curso='" + curso + '\'' +
                 '}';
-    }
+    }*/
 }
